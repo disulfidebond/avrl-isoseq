@@ -24,6 +24,39 @@ Here, we will describe one possible workflow for transcript isoform detection an
 
 ## Workflow
 
-### 
+The PacBio IsoSeq pipeline can be run manually, using *pbsmrtpipe*, or using the SMRT Analysis GUI.  The first option will be described here, and is applicable to the *pbsmrtpipe* command, which runs a pre-created pipeline. 
 
-ccs --noPolish --numThreads=16 --minLength=300 --minPasses=1 --minZScore=-999 --maxDropFraction=0.8 --minPredictedAccuracy=0.8 --minSnr=4 /slipstream/oc/pacbio/pacbio_raw/6_F01/m54178_190126_092450.subreads.bam m54178_190126_092450.ccs.bam
+### Step 1: CCS
+This step converts the CCS subreads into consensus reads.  The following commands have been tested successfully:
+
+        ccs --noPolish --numThreads=16 --minLength=300 --minPasses=1 --minZScore=-999 --maxDropFraction=0.8 --minPredictedAccuracy=0.8 --minSnr=4 /path/to/file/file.subreads.bam outputFile.ccs.bam
+        dataset create --type ConsensusReadSet outputFile-Step1.ccs.xml outputFile.ccs.bam
+        
+Page 83 of the PacBio SMRT Tools User Manual has a detailed explanation of the usage.
+
+This step takes about 96 hours to complete, with the above parameters.
+
+### Step 2: Classify
+This step classifies reads into full length or non-full length reads, and checks for chimeric reads.  The following commands have been tested successfully:
+
+        pbtranscript classify outputFile-Step1.ccs.xml isoseq_draft.fasta --flnc=flnc_outputFile.isoseq_flnc.fasta --nfl=nfl_outputFile.isoseq_nfl.fasta
+
+After the step is completed, ensure that the number of artificial concatemers is low, by verifying that the number of full-length, non-chimeric (flnc) reads is slightly less than the number of full-length reads (SMRT_Tools User Guide page 85). 
+
+This step takes about 5 hours to complete, with the above parameters.
+
+### Step 3: Clustering
+
+The Clustering step can be run with or without polishing.  Polishing is the process of examining quality values to further refine consensus sequences of clusters.
+
+Running the classify step without polishing can be done with the following command, and takes about 5 hours:
+
+        pbtranscript cluster flnc_outputFile.isoseq_flnc.fasta outputFile.unpolished_clustered.fasta
+
+Running the classify step with polishing can be done with the following command, and takes over 1 week:
+
+        pbtranscript cluster flnc_outputFile.isoseq_flnc.fasta outputFile.polished_clustered.fasta --quiver --nfl_fa=nfl_outputFile.isoseq_nfl.fasta --bas_fofn=file.subreadset.xml
+        
+Note that there is a typo in the User guide; use the option *nfl_fa=* and not *nfl=*
+
+The file *file.subreadset.xml* is the file described above under 'Requirements and Setup'
