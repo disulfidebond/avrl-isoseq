@@ -22,4 +22,8 @@ Long Amplicon Analysis (LAA) is a step in several PAcBio workflows that generate
   * LAA default of 500 clustering reads runs each sample in ~2 minutes, MHC class I default of 10000 takes ~30 minutes but detects more alleles. Setting even higher values like 100,000 clustering reads causes runtimes of several hours.
   * maxReads can be set very high to ensure that all reads are used to accurately define clusters. This doesn't significantly impact runtime
 
+## Classify (IsoSeq only)
+This step will classify CCSs and use the XML file as an input, then creating a fasta output file
 
+## Cluster (IsoSeq only)
+This step performs isoform-level clustering of transcript isoforms by building consensus sequences of similar clusters
