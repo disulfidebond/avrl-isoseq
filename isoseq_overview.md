@@ -57,6 +57,8 @@ Running the classify step with polishing can be done with the following command,
 
         pbtranscript cluster flnc_outputFile.isoseq_flnc.fasta outputFile.polished_clustered.fasta --quiver --nfl_fa=nfl_outputFile.isoseq_nfl.fasta --bas_fofn=file.subreadset.xml
         
+* Other Comments
+
 Note that there is a typo in the User guide; use the option *nfl_fa=* and not *nfl=*
 
 The file *file.subreadset.xml* is the file described above under 'Requirements and Setup'
